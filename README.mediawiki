@@ -40,6 +40,36 @@ After installation you must call the kickstart script '''"grails kickstart"''', 
 Afterwards create your domain classes (or copy them into the project) and generate controllers and views - they will
 now use the Bootstrap framework!
 
+== Note for Grails 2.4.4 ==
+Here are what to do in order to support 2.4.4 (at least)
+1- add to plugins section (in BuildConfig.groovy)
+2- remove (or comment out) asset-pipeline plugins
+<pre>
+	plugins {
+		...
+		// compile ":asset-pipeline:1.9.9"
+		compile ":kickstart-with-bootstrap:1.2.0"
+	}
+</pre>
+3- replace (or comment out) ${assetPath()} grails command by ${resource()} from the main.gsp default layout (since w've removed asset-pipeline plugin)
+<pre>
+		<!-- link rel="shortcut icon" href="${assetPath(src: 'favicon.ico')}" type="image/x-icon" -->
+		<link rel="shortcut icon" href="${resource(dir:'images',file:'favicon.ico')}" type="image/x-icon">
+		<!-- link rel="apple-touch-icon" href="${assetPath(src: 'apple-touch-icon.png')}" -->
+		<link rel="apple-touch-icon" href="${resource(dir:'images',file:'apple-touch-icon.png')}">
+		<!-- link rel="apple-touch-icon" sizes="114x114" href="${assetPath(src: 'apple-touch-icon-retina.png')}" -->
+		<link rel="apple-touch-icon" sizes="114x114" href="${resource(dir:'images',file:'apple-touch-icon-retina.png')}">
+
+</pre>
+4- add fonts directory (as URL patterns) authorization to Config.groovy as follows:
+<pre>
+	// What URL patterns should be processed by the resources plugin 
+	grails.resources.adhoc.patterns = ['/images/*', '/css/*', '/js/*', '/plugins/*', '/bootstrap/dist/fonts/*']  
+	grails.resources.adhoc.includes = ['/images/**', '/css/**', '/js/**', '/plugins/**', '/bootstrap/dist/fonts/**'] 
+</pre>
+
+That's all, at this state create-controller and scaffoling pages should work without any error (css,js,grails...etc.) in grails v2.4.4.
+
 == Consequences! ==
 The Kickstart script will (after asking you) overwrite a few files in the conf, src, and views directories of your project - '''you should use it only on fresh new Grails projects'''. 
 
@@ -85,11 +115,16 @@ Please note that the '''datepicker''' can handle dates after the year 9999 while
 ** see http://joerg-rech.com and follow @JoergRech
 
 == Backlog: Work required / Problems ==
+
 '''1.x.1''' Fix for Date binding (currently, the date binding does not work)<br/>
 '''1.x.2''' Fix for DatePicker (currently, the datepicker requires jQuery 1.8.3)<br/>
 '''1.x.3''' Fix for index vs list actions (currently, both are supported) <br/>
 
 == Changelog ==
+
+'''1.1.2''' Update to support Grail 2.4.4 (with some modification, see above to fix asset-pipeline issue).<br/>
+'''1.1.1''' Fix favicon issue.<br/>
+
 '''1.1.0''' Fresh setup on a newly created Grail 2.3.5 plugin project. Update to Grails 2.3.5.<br/>
 '''1.0.5''' Removed dependency for Font-Awesome (Bootstrap uses Glyphicon's Icon-Font now)<br/>
 '''1.0.4''' Correction of "alert-error" into "alert-danger" - changed in Bootstrap 3 (Tip by Leo Bartoloni)<br/>
